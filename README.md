@@ -423,6 +423,54 @@ DOKPLOY_ENABLED_TAGS=project,application,postgres
 
 All tools include semantic annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`) to help MCP clients understand their behavior and safety characteristics.
 
+### Environment Tool Data Format
+
+The MCP server includes four environment helper tools with a normalized shape for AI agents:
+
+- `projectEnvironment-get`
+- `projectEnvironment-save`
+- `serviceEnvironment-get`
+- `serviceEnvironment-save`
+
+`*-get` tools return both forms:
+
+- `envMap`: object map in `KEY -> VALUE` format for reliable agent parsing.
+- `envText`: reconstructed `.env` string format (`KEY=VALUE` per line).
+
+`*-save` tools accept `env` in either format:
+
+- String: `.env` text (`KEY=VALUE` lines)
+- Object: map (`{ "KEY": "VALUE" }`)
+
+When a map is provided, the server automatically serializes it to `.env` text before calling Dokploy API endpoints.
+
+Example request for `serviceEnvironment-save` (map input):
+
+```json
+{
+  "serviceType": "application",
+  "serviceId": "app_123",
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000"
+  }
+}
+```
+
+Example response payload for `serviceEnvironment-get`:
+
+```json
+{
+  "serviceType": "application",
+  "serviceId": "app_123",
+  "envMap": {
+    "NODE_ENV": "production",
+    "PORT": "3000"
+  },
+  "envText": "NODE_ENV=production\nPORT=3000"
+}
+```
+
 ## Architecture
 
 Built with **@modelcontextprotocol/sdk**, **TypeScript**, and **Zod** for type-safe schema validation:

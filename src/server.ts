@@ -57,7 +57,7 @@ export function createServer() {
 
   server.tool(
     "projectEnvironment-get",
-    "Get environment variables for a project. Returns the project-level environment variables.",
+    "Get environment variables for a project. Returns normalized envMap plus the reconstructed envText.",
     { projectId: z.string().min(1) },
     { title: "Get Project Environment Variables", readOnlyHint: true, idempotentHint: true },
     getProjectEnvironmentHandler,
@@ -65,15 +65,15 @@ export function createServer() {
 
   server.tool(
     "projectEnvironment-save",
-    "Save (update) environment variables for a project. The env parameter should be a string in KEY=VALUE format.",
-    { projectId: z.string().min(1), env: z.string() },
+    "Save (update) environment variables for a project. The env parameter can be a string in KEY=VALUE format or an object map of env keys to values.",
+    { projectId: z.string().min(1), env: z.union([z.string(), z.record(z.string(), z.string())]) },
     { title: "Save Project Environment Variables", idempotentHint: true },
     saveProjectEnvironmentHandler,
   );
 
   server.tool(
     "serviceEnvironment-get",
-    "Get environment variables for a service (application, compose, postgres, mysql, mongo, redis, mariadb, or libsql).",
+    "Get environment variables for a service (application, compose, postgres, mysql, mongo, redis, mariadb, or libsql). Returns normalized envMap plus the reconstructed envText.",
     {
       serviceType: z.enum(["application", "compose", "postgres", "mysql", "mongo", "redis", "mariadb", "libsql"]),
       serviceId: z.string().min(1),
@@ -84,11 +84,11 @@ export function createServer() {
 
   server.tool(
     "serviceEnvironment-save",
-    "Save (update) environment variables for a service. The env parameter should be a string in KEY=VALUE format.",
+    "Save (update) environment variables for a service. The env parameter can be a string in KEY=VALUE format or an object map of env keys to values.",
     {
       serviceType: z.enum(["application", "compose", "postgres", "mysql", "mongo", "redis", "mariadb", "libsql"]),
       serviceId: z.string().min(1),
-      env: z.string(),
+      env: z.union([z.string(), z.record(z.string(), z.string())]),
     },
     { title: "Save Service Environment Variables", idempotentHint: true },
     saveServiceEnvironmentHandler,
