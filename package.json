@@ -1,5 +1,5 @@
 {
-  "name": "@dokploy/mcp",
+  "name": "@bravos2k5/mcp",
   "version": "0.29.0",
   "description": "MCP Server for Dokploy API",
   "main": "build/index.js",
@@ -31,7 +31,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Dokploy/mcp.git"
+    "url": "git+https://github.com/bravos2k5/mcp.git"
   },
   "keywords": [
     "modelcontextprotocol",
@@ -40,9 +40,9 @@
   ],
   "author": "Henrique Andrade <developer@henriqueandrade.dev>",
   "bugs": {
-    "url": "https://github.com/Dokploy/mcp/issues"
+    "url": "https://github.com/bravos2k5/mcp/issues"
   },
-  "homepage": "https://github.com/Dokploy/mcp#readme",
+  "homepage": "https://github.com/bravos2k5/mcp#readme",
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
