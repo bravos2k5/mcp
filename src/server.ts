@@ -1,7 +1,14 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
 import { generatedTools } from "./generated/tools.js";
 import { createHandler } from "./handler.js";
 import { createLogger } from "./utils/logger.js";
+import {
+  getServiceEnvironmentHandler,
+  saveServiceEnvironmentHandler,
+  getProjectEnvironmentHandler,
+  saveProjectEnvironmentHandler,
+} from "./environment-tools.js";
 
 const logger = createLogger("MCP-Server");
 
@@ -47,6 +54,45 @@ export function createServer() {
       createHandler(tool),
     );
   }
+
+  server.tool(
+    "projectEnvironment-get",
+    "Get environment variables for a project. Returns the project-level environment variables.",
+    { projectId: z.string().min(1) },
+    { title: "Get Project Environment Variables", readOnlyHint: true, idempotentHint: true },
+    getProjectEnvironmentHandler,
+  );
+
+  server.tool(
+    "projectEnvironment-save",
+    "Save (update) environment variables for a project. The env parameter should be a string in KEY=VALUE format.",
+    { projectId: z.string().min(1), env: z.string() },
+    { title: "Save Project Environment Variables", idempotentHint: true },
+    saveProjectEnvironmentHandler,
+  );
+
+  server.tool(
+    "serviceEnvironment-get",
+    "Get environment variables for a service (application, compose, postgres, mysql, mongo, redis, mariadb, or libsql).",
+    {
+      serviceType: z.enum(["application", "compose", "postgres", "mysql", "mongo", "redis", "mariadb", "libsql"]),
+      serviceId: z.string().min(1),
+    },
+    { title: "Get Service Environment Variables", readOnlyHint: true, idempotentHint: true },
+    getServiceEnvironmentHandler,
+  );
+
+  server.tool(
+    "serviceEnvironment-save",
+    "Save (update) environment variables for a service. The env parameter should be a string in KEY=VALUE format.",
+    {
+      serviceType: z.enum(["application", "compose", "postgres", "mysql", "mongo", "redis", "mariadb", "libsql"]),
+      serviceId: z.string().min(1),
+      env: z.string(),
+    },
+    { title: "Save Service Environment Variables", idempotentHint: true },
+    saveServiceEnvironmentHandler,
+  );
 
   return server;
 }
